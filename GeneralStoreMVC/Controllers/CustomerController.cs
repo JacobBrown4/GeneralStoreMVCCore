@@ -37,6 +37,7 @@ namespace GeneralStoreMVC.Controllers
             if (!ModelState.IsValid)
             {
                 TempData["ErrorMsg"] = "Model State is Invalid";
+                return View(model);
             }
 
             bool wasCreated = await _service.CreateCustomer(model);
