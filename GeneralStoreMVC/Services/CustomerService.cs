@@ -43,7 +43,7 @@ namespace GeneralStoreMVC.Services
             };
         }
 
-        public async Task<IEnumerable<CustomerListItem>> ListCustomers()
+        public async Task<IEnumerable<CustomerListItem>> GetAllCustomers()
         {
             var customers = await _context.Customers.Select(customer => new CustomerListItem
             {
