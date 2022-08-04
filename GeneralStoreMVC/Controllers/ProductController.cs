@@ -1,30 +1,22 @@
-﻿using GeneralStoreMVC.Models.Customer;
+﻿using GeneralStoreMVC.Models.Product;
 using GeneralStoreMVC.Services;
 using Microsoft.AspNetCore.Mvc;
 
 namespace GeneralStoreMVC.Controllers
 {
-    public class CustomerController : Controller
+    public class ProductController : Controller
     {
-        private readonly ICustomerService _service;
-        public CustomerController(ICustomerService service)
+        private readonly IProductService _service;
+        public ProductController(IProductService service)
         {
             _service = service;
         }
         public async Task<IActionResult> Index()
         {
-            var customers = await _service.GetAllCustomers();
-            return View(customers);
+            var products = await _service.GetAllProducts();
+            return View(products);
         }
 
-        public async Task<IActionResult> Details(int id)
-        {
-            var customer = await _service.GetCustomerById(id);
-            if (customer == null)
-                return NotFound();
-
-            return View(customer);
-        }
 
         public IActionResult Create()
         {
@@ -32,7 +24,7 @@ namespace GeneralStoreMVC.Controllers
         }
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(CustomerCreate model)
+        public async Task<IActionResult> Create([Bind("Name,QuantityInStock,Price")]ProductCreate model)
         {
             if (!ModelState.IsValid)
             {
@@ -40,38 +32,45 @@ namespace GeneralStoreMVC.Controllers
                 return View(model);
             }
 
-            bool wasCreated = await _service.CreateCustomer(model);
-
-            if (wasCreated)
+            if (await _service.CreateProduct(model))
                 return RedirectToAction(nameof(Index));
 
             TempData["ErrorMsg"] = "Unable to save to database. Please try again later.";
             return View(model);
         }
+        public async Task<IActionResult> Details(int id)
+        {
+            var product = await _service.GetProductById(id);
+            if (product == null)
+                return NotFound();
+
+            return View(product);
+        }
 
         [HttpGet]
         public async Task<IActionResult> Edit(int id)
         {
-            CustomerDetail customer = await _service.GetCustomerById(id);
+            ProductDetail product = await _service.GetProductById(id);
 
-            if (customer == null) return NotFound();
+            if (product == null) return NotFound();
 
-            var customerEdit = new CustomerEdit
+            var productEdit = new ProductEdit
             {
-                Id = customer.Id,
-                Name = customer.Name,
-                Email = customer.Email
+                Id = product.Id,
+                Name = product.Name,
+                Price = product.Price,
+                QuantityInStock = product.QuantityInStock
             };
-            return View(customerEdit);
+            return View(productEdit);
         }
 
         [HttpPost]
-        public async Task<IActionResult> Edit(int id, CustomerEdit model)
+        public async Task<IActionResult> Edit(int id, ProductEdit model)
         {
             if (id != model.Id || !ModelState.IsValid)
                 return View(ModelState);
 
-            bool wasUpdated = await _service.UpdateCustomer(model);
+            bool wasUpdated = await _service.UpdateProduct(model);
             if (wasUpdated) return RedirectToAction(nameof(Index));
 
             ViewData["ErrorMsg"] = "Unable to save to the database. Please try again later.";
@@ -80,16 +79,16 @@ namespace GeneralStoreMVC.Controllers
         [HttpGet]
         public async Task<IActionResult> Delete(int id)
         {
-            var customer = await _service.GetCustomerById(id);
-            if (customer == null) return NotFound();
-            return View(customer);
+            var product = await _service.GetProductById(id);
+            if (product == null) return NotFound();
+            return View(product);
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Delete(CustomerDetail model)
+        public async Task<IActionResult> Delete(ProductDetail model)
         {
-            if (await _service.DeleteCustomer(model.Id))
+            if (await _service.DeleteProduct(model.Id))
                 return RedirectToAction(nameof(Index));
             else
                 return BadRequest();

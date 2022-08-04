@@ -1,4 +1,4 @@
-﻿@model GeneralStoreMVC.Models.Customer.CustomerDetail
+﻿@model GeneralStoreMVC.Models.Product.ProductDetail
 
 @{
     ViewData["Title"] = "Delete";
@@ -8,7 +8,7 @@
 
 <h3>Are you sure you want to delete this?</h3>
 <div>
-    <h4>CustomerDetail</h4>
+    <h4>ProductDetail</h4>
     <hr />
     <dl class="row">
         <dt class = "col-sm-2">
@@ -24,10 +24,16 @@
             @Html.DisplayFor(model => model.Name)
         </dd>
         <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Email)
+            @Html.DisplayNameFor(model => model.QuantityInStock)
         </dt>
         <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Email)
+            @Html.DisplayFor(model => model.QuantityInStock)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.Price)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Price)
         </dd>
     </dl>
     

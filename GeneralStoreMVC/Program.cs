@@ -10,6 +10,7 @@ builder.Services.AddDbContext<GeneralStoreDbContext>(options =>
 options.UseSqlServer(connectionString));
 
 builder.Services.AddScoped<ICustomerService, CustomerService>();
+builder.Services.AddScoped<IProductService, ProductService>();
 builder.Services.AddControllersWithViews();
 
 var app = builder.Build();
