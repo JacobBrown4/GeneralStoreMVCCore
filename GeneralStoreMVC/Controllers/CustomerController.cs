@@ -42,7 +42,7 @@ namespace GeneralStoreMVC.Controllers
 
             bool wasCreated = await _service.CreateCustomer(model);
 
-            if (!wasCreated)
+            if (wasCreated)
                 return RedirectToAction(nameof(Index));
 
             TempData["ErrorMsg"] = "Unable to save to database. Please try again later.";
