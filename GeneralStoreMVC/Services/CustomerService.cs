@@ -71,7 +71,7 @@ namespace GeneralStoreMVC.Services
         }
         public async Task<bool> DeleteCustomer(int customerId)
         {
-            var customer = _context.Customers.Find(customerId);
+            var customer = await _context.Customers.FindAsync(customerId);
 
             if (customer is null) return false;
 
