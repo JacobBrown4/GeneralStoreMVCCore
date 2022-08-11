@@ -15,6 +15,14 @@ namespace GeneralStoreMVC.Services
         {
             if (model == null) return false;
 
+            var product = await _context.Products.SingleOrDefaultAsync(p => p.Id == model.ProductId);
+
+            if (product == null)
+                return false;
+
+            if (product.QuantityInStock < model.Quantity)
+                return false;
+
             _context.Transactions.Add(new Transaction
             {
                 ProductId = model.ProductId,
@@ -23,8 +31,11 @@ namespace GeneralStoreMVC.Services
                 DateOfTransaction = DateTime.Now
             });
 
-            if (await _context.SaveChangesAsync() == 1)
+            product.QuantityInStock -= model.Quantity;
+
+            if (await _context.SaveChangesAsync() == 2)
                 return true;
+
             return false;
         }
 
@@ -58,28 +69,61 @@ namespace GeneralStoreMVC.Services
                 .Include(r => r.Product)
                 .Include(r => r.Customer)
                 .Select(transaction => new TransactionListItem
-            {
-                Id = transaction.Id,
-                Product = transaction.Product.Name,
-                Customer = transaction.Customer.Name,
-                Quantity = transaction.Quantity,
-                DateOfTransaction = transaction.DateOfTransaction
-            }).ToListAsync();
+                {
+                    Id = transaction.Id,
+                    Product = transaction.Product.Name,
+                    Customer = transaction.Customer.Name,
+                    Quantity = transaction.Quantity,
+                    DateOfTransaction = transaction.DateOfTransaction
+                }).ToListAsync();
             return transactions;
         }
 
         public async Task<bool> UpdateTransaction(TransactionEdit model)
         {
             var transaction = await _context.Transactions.FindAsync(model.Id);
+            Product product;
+            int changes = 1;
 
             if (transaction is null) return false;
+
+            if (transaction.ProductId != model.ProductId)
+            {
+                // Since we are managing product inventory by taking away from it with transactions
+                // We need to check if they changed what product it was. If so grab the old product
+                // Add the product back in so it's not missing inventory
+                // Before we do that though we should check we aren't taking more inventory then we have
+                product = await _context.Products.FindAsync(model.ProductId);
+
+                if (product is null) return false;
+                if (product.QuantityInStock < model.Quantity) return false;
+
+                product.QuantityInStock -= model.Quantity;
+                changes += 1;
+                var oldProduct = await _context.Products.FindAsync(transaction.ProductId);
+                oldProduct.QuantityInStock += transaction.Quantity;
+                changes += 1;
+            }
+            else
+            {
+                // If it's still the same product let's see if the quantity is changed
+                // If so we'll add back the old value and take away the new value undoing anything we did
+                if (transaction.Quantity != model.Quantity)
+                {
+                    product = await _context.Products.FindAsync(transaction.ProductId);
+                    product.QuantityInStock += transaction.Quantity;
+                    if (product.QuantityInStock < model.Quantity) return false;
+                    product.QuantityInStock -= model.Quantity;
+                    changes += 1;
+                }
+            }
 
             transaction.ProductId = model.ProductId;
             transaction.Quantity = model.Quantity;
             transaction.CustomerId = model.CustomerId;
             transaction.DateOfTransaction = model.DateOfTransaction;
 
-            if (await _context.SaveChangesAsync() == 1)
+            if (await _context.SaveChangesAsync() == changes)
             {
                 return true;
             }

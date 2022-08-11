@@ -1,5 +1,6 @@
 ﻿using GeneralStoreMVC.Data;
 using GeneralStoreMVC.Models.Product;
+using GeneralStoreMVC.Models.Transaction;
 using Microsoft.EntityFrameworkCore;
 
 namespace GeneralStoreMVC.Services
@@ -19,7 +20,8 @@ namespace GeneralStoreMVC.Services
             {
                 Name = model.Name,
                 Price = model.Price,
-                QuantityInStock = model.QuantityInStock
+                QuantityInStock = model.QuantityInStock,
+                ProductType = (int)model.ProductType,
             });
 
             if (await _context.SaveChangesAsync() == 1)
@@ -30,7 +32,7 @@ namespace GeneralStoreMVC.Services
 
         public async Task<ProductDetail> GetProductById(int productId)
         {
-            var product = await _context.Products.FindAsync(productId);
+            var product = await _context.Products.Include(p => p.Transactions).SingleOrDefaultAsync(p => p.Id == productId);
             if (product is null)
             {
                 return null;
@@ -41,7 +43,14 @@ namespace GeneralStoreMVC.Services
                 Id = product.Id,
                 Name = product.Name,
                 Price = product.Price,
-                QuantityInStock = product.QuantityInStock
+                QuantityInStock = product.QuantityInStock,
+                ProductType = (ProductType)product.ProductType,
+                TransactionHistories = product.Transactions.OrderBy(t=>t.DateOfTransaction).Select(t => new TransactionHistory
+                {
+                    Quantity = t.Quantity,
+                    DateOfTransaction = t.DateOfTransaction,
+                    TotalCost = t.Quantity * product.Price
+                }).ToList()
             };
         }
 

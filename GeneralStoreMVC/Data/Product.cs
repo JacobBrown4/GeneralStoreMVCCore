@@ -14,6 +14,7 @@ namespace GeneralStoreMVC.Data
         public string Name { get; set; } = null!;
         public int QuantityInStock { get; set; }
         public double Price { get; set; }
+        public int ProductType { get; set; }
 
         public virtual ICollection<Transaction> Transactions { get; set; }
     }

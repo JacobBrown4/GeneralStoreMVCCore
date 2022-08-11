@@ -1,4 +1,5 @@
-﻿@model GeneralStoreMVC.Models.Product.ProductCreate
+﻿@using GeneralStoreMVC.Models.Product
+@model GeneralStoreMVC.Models.Product.ProductCreate
 
 @{
     ViewData["Title"] = "Create";
@@ -26,6 +27,13 @@
                 <label asp-for="Price" class="control-label"></label>
                 <input asp-for="Price" class="form-control" />
                 <span asp-validation-for="Price" class="text-danger"></span>
+            </div>
+                <div class="form-group">
+                <label asp-for="ProductType" class="control-label"></label>
+                <select asp-for="ProductType" asp-items="Html.GetEnumSelectList<ProductType>()" class="form-control">
+                <option selected="selected" value="">Please select</option>
+                </select>
+                    <span asp-validation-for="ProductType" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <input type="submit" value="Create" class="btn btn-primary" />
