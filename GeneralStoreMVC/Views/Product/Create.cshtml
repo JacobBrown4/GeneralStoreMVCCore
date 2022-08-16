@@ -1,4 +1,4 @@
-﻿@using GeneralStoreMVC.Models.Product
+﻿@using GeneralStoreMVC.Models
 @model GeneralStoreMVC.Models.Product.ProductCreate
 
 @{
@@ -28,15 +28,13 @@
                 <input asp-for="Price" class="form-control" />
                 <span asp-validation-for="Price" class="text-danger"></span>
             </div>
-                <div class="form-group">
-                <label asp-for="ProductType" class="control-label"></label>
-                <select asp-for="ProductType" asp-items="Html.GetEnumSelectList<ProductType>()" class="form-control">
-                <option selected="selected" value="">Please select</option>
-                </select>
-                    <span asp-validation-for="ProductType" class="text-danger"></span>
+            <div class="form-group">
+                <label asp-for="ProductCategory" class="control-label"></label>
+                <select name="ProductCategory" id="ProductCategory" asp-items="Html.GetEnumSelectList<ProductType>()" class="form-control"></select>
+                <span asp-validation-for="ProductCategory" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-primary" />
+                <input type="submit" value="Save" class="btn btn-primary" />
             </div>
         </form>
     </div>
@@ -47,5 +45,7 @@
 </div>
 
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
-}
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+    }

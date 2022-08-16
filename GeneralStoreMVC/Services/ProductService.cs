@@ -1,4 +1,5 @@
 ﻿using GeneralStoreMVC.Data;
+using GeneralStoreMVC.Models;
 using GeneralStoreMVC.Models.Product;
 using GeneralStoreMVC.Models.Transaction;
 using Microsoft.EntityFrameworkCore;
@@ -21,7 +22,7 @@ namespace GeneralStoreMVC.Services
                 Name = model.Name,
                 Price = model.Price,
                 QuantityInStock = model.QuantityInStock,
-                ProductType = (int)model.ProductType,
+                ProductType = (int)model.ProductCategory,
             });
 
             if (await _context.SaveChangesAsync() == 1)
@@ -44,7 +45,7 @@ namespace GeneralStoreMVC.Services
                 Name = product.Name,
                 Price = product.Price,
                 QuantityInStock = product.QuantityInStock,
-                ProductType = (ProductType)product.ProductType,
+                ProductCategory = (ProductType)product.ProductType,
                 TransactionHistories = product.Transactions.OrderBy(t=>t.DateOfTransaction).Select(t => new TransactionHistory
                 {
                     Quantity = t.Quantity,
@@ -75,6 +76,7 @@ namespace GeneralStoreMVC.Services
             product.Name = model.Name;
             product.QuantityInStock = model.QuantityInStock;
             product.Price = model.Price;
+            product.ProductType = (int)model.ProductCategory;
 
             if (await _context.SaveChangesAsync() == 1)
             {

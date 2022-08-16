@@ -10,8 +10,8 @@ namespace GeneralStoreMVC.Models.Product
         [Display(Name = "Quantity In Stock")]
         public int QuantityInStock { get; set; }
         public double Price { get; set; }
-        [Display(Name = "Product Type")]
-        public ProductType ProductType {get; set;}
+        [Display(Name = "Product Category")]
+        public ProductType ProductCategory {get; set;}
         public List<TransactionHistory> TransactionHistories = new List<TransactionHistory>();
     }
 }
